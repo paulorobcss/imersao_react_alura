@@ -1,13 +1,14 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import PageDefault from '../../../components/PageDefault/index.js'
 import FormField from '../../../components/FormField/index.js';
+import Button from '../../../components/Button/index.js';
 
 function CadastroCategoria() {
     const [categorias, setCategorias] = useState([])
     const valoresIniciais = {
-        nome: ' ',
-        descricao: ' ',
+        nome: '',
+        descricao: '',
         cor: '#242c37',
         cor_letra: '#11dc00',
     }
@@ -27,6 +28,17 @@ function CadastroCategoria() {
         );
     }
 
+    useEffect(() => {
+        const URL = 'http://localhost:8080/categorias'
+        fetch(URL)
+            .then(async (respostaDoServidor) => {
+                const resposta = await respostaDoServidor.json()
+                setCategorias([
+                    ...resposta
+                ])
+            })
+    }, [])
+
     return(
         <PageDefault>
             <h1>Cadastro de categoria: {values.nome}</h1>
@@ -41,7 +53,7 @@ function CadastroCategoria() {
             }}>
 
                 <FormField 
-                    label='Nome da Categoria'
+                    label='Nome da Categoria:'
                     type='text'
                     name='nome'
                     value={values.nome}
@@ -50,23 +62,11 @@ function CadastroCategoria() {
 
                 <FormField 
                     label='Descrição:'
-                    type='text'
+                    type='textarea'
                     name='descricao'
                     value={values.descricao}
                     onChange={handleChange}
                 />
-
-                {/* <div>
-                    <label>
-                        Descrição:
-                        <textarea 
-                            type='text'
-                            name='descricao'
-                            value={values.descricao}
-                            onChange={handleChange}
-                        />
-                    </label>
-                </div> */}
 
                 <FormField 
                     label='Cor:'
@@ -76,45 +76,29 @@ function CadastroCategoria() {
                     onChange={handleChange}
                 />
 
-                {/* <div>
-                    <label>
-                        Cor:
-                        <input 
-                            type='color'
-                            name='cor'
-                            value={values.cor}
-                            onChange={handleChange}
-                        />
-                    </label>
-                </div> */}
-
                 <FormField 
-                    label='Cor da Letra'
+                    label='Cor da Letra:'
                     type='color'
                     name='cor_letra'
                     value={values.cor_letra}
                     onChange={handleChange}
                 />
 
-                {/* <div>
-                    Cor da Letra:
-                        <input 
-                            type='color'
-                            name='cor_letra'
-                            value={values.cor_letra}
-                            onChange={handleChange}
-                        />
-                </div> */}
-
-                <button>
+                <Button>
                     Cadastrar
-                </button>
+                </Button>
             </form>
 
+            {categorias.length === 0 && (
+                <div>
+                    Carregando...
+                </div>
+            )}
+
             <ul>
-                {categorias.map((categoria, indice) => {
+                {categorias.map((categoria) => {
                     return(
-                        <li key={`${categoria}${indice}`}> {/* concatenação do texto com o número do índice */}
+                        <li key={`${categoria.nome}`}> {/* concatenação do texto com o número do índice */}
                             {categoria.nome}
                         </li>
                     )
