@@ -9,6 +9,13 @@ const FormFieldWrapper = styled.div`
         padding-left: 170px;
         padding-right: 70px;
     }
+
+    @media (max-width: 800px) {
+        input[type='color']{
+            padding-left: 135px;
+            padding-right: 30px;
+        }
+    }
 `;
 
 const Label = styled.label``;
@@ -67,13 +74,15 @@ const Input = styled.input`
     }}
 `;
 
-function FormField({label, type, name, value, onChange}){
+function FormField({label, type, name, value, onChange, suggestions}){
     const fieldId = `id_${name}`
     const isTextArea = type === 'textarea'
     const tag = isTextArea ? 'textarea': 'input';
     const hasValue = Boolean(value.length);
+    const hasSuggestion = Boolean(suggestions.length)
 
     return(
+
         <FormFieldWrapper>
             <Label htmlFor={fieldId}>
                 <Input
@@ -84,10 +93,23 @@ function FormField({label, type, name, value, onChange}){
                     hasValue={hasValue}
                     name={name}
                     onChange={onChange}
+                    autoComplete='off'
+                    list={`suggestionFor_${fieldId}`}
                 />
                 <Label.Text>
                     {label}
                 </Label.Text>
+                {hasSuggestion && (
+                    <datalist id={`suggestionFor_${fieldId}`}>
+                        {
+                            suggestions.map((suggestion) => (
+                                <option value={suggestion} key={`suggestionFor_${fieldId}option${suggestion}`}>
+                                    {suggestion}
+                                </option>
+                            ))
+                        }
+                    </datalist>
+                )}
             </Label>
         </FormFieldWrapper>
     );
@@ -96,6 +118,8 @@ function FormField({label, type, name, value, onChange}){
 FormField.defaultProps = {
     type: 'text',
     value: '',
+    onChange: () => {},
+    suggestions: [],
 }
 
 FormField.propTypes = {
@@ -104,6 +128,7 @@ FormField.propTypes = {
     name: PropTypes.string.isRequired,
     value: PropTypes.string,
     onChange: PropTypes.func,
+    suggestions: PropTypes.arrayOf(PropTypes.string),
 };
 
 export default FormField

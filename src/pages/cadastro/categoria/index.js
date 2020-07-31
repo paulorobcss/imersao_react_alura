@@ -3,6 +3,7 @@ import {Link} from 'react-router-dom';
 import PageDefault from '../../../components/PageDefault/index.js'
 import FormField from '../../../components/FormField/index.js';
 import Button from '../../../components/Button/index.js';
+import useForm from '../../../hooks/useForm'
 
 function CadastroCategoria() {
     const [categorias, setCategorias] = useState([])
@@ -12,21 +13,7 @@ function CadastroCategoria() {
         cor: '#242c37',
         cor_letra: '#11dc00',
     }
-    const [values, setValues] = useState(valoresIniciais);
-
-    function setValue(key, value){
-        setValues({
-            ...values,
-            [key]: value,
-        })
-    }
-
-    function handleChange(info){
-        setValue(
-            info.target.getAttribute('name'),
-            info.target.value
-        );
-    }
+    const {values, handleChange, clearForm} = useForm(valoresIniciais);
 
     useEffect(() => {
         const URL = 'http://localhost:8080/categorias'
@@ -49,7 +36,7 @@ function CadastroCategoria() {
                     ...categorias, // Adiciona o que for escrito ao já existente
                     values
                 ]);
-                setValues(valoresIniciais)
+                clearForm(valoresIniciais)
             }}>
 
                 <FormField 
@@ -98,16 +85,18 @@ function CadastroCategoria() {
             <ul>
                 {categorias.map((categoria) => {
                     return(
-                        <li key={`${categoria.nome}`}> {/* concatenação do texto com o número do índice */}
-                            {categoria.nome}
+                        <li key={`${categoria.titulo}`}>
+                            {categoria.titulo}
                         </li>
                     )
                 })}
             </ul>
 
-            <Link to='/'>
-                Ir para home.
-            </Link>
+            <Button>
+                <Link to='/' style={{textDecoration: 'none'}}>
+                    Ir para home.
+                </Link>
+            </Button>
         </PageDefault>
     )
 }
